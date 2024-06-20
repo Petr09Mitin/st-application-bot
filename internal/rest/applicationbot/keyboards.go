@@ -1,0 +1,37 @@
+package applicationbot
+
+import "github.com/NicoNex/echotron/v3"
+
+var (
+	StartKeyboard = echotron.InlineKeyboardMarkup{
+		InlineKeyboard: [][]echotron.InlineKeyboardButton{
+			{
+				{
+					Text:         "Начать",
+					CallbackData: StartCommand,
+				},
+			},
+		},
+	}
+	CancelKeyboard = echotron.InlineKeyboardMarkup{
+		InlineKeyboard: [][]echotron.InlineKeyboardButton{
+			{
+				{
+					Text:         "Отмена",
+					CallbackData: CancelCommand,
+				},
+			},
+		},
+	}
+	OptionsEmpty = &echotron.MessageOptions{
+		ParseMode: echotron.HTML,
+	}
+	OptionsWithStartKeyboard = &echotron.MessageOptions{
+		ParseMode:   echotron.HTML,
+		ReplyMarkup: StartKeyboard,
+	}
+	OptionsWithCancelKeyboard = &echotron.MessageOptions{
+		ParseMode:   echotron.HTML,
+		ReplyMarkup: CancelKeyboard,
+	}
+)

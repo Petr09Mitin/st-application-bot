@@ -1,0 +1,17 @@
+package router
+
+import (
+	"net/http"
+
+	"github.com/gorilla/mux"
+	applicationrest "github.com/st-application-bot/internal/rest/application_rest"
+	"github.com/st-application-bot/usecase/application"
+)
+
+func MountApplicationRouter(root *mux.Router, applicationStorage application.ApplicationStorage) {
+	r := root.PathPrefix("/application").Subrouter()
+
+	h := applicationrest.NewApplicationHandler(applicationStorage)
+
+	r.HandleFunc("/", h.HandleGetAllApplications).Methods(http.MethodGet, http.MethodOptions)
+}
