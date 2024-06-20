@@ -21,6 +21,7 @@ func (a *ApplicationHandler) HandleGetAllApplications(w http.ResponseWriter, r *
 	applications, err := a.service.GetAllApplications(r.Context())
 	if err != nil {
 		json.ServeJSONError(r.Context(), w, err)
+		return
 	}
 
 	json.ServeJSONBody(r.Context(), w, applications, http.StatusOK)
