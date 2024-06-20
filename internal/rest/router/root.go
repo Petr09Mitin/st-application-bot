@@ -16,7 +16,7 @@ import (
 func MountRootRouter(rootRouter *mux.Router, applicationStorage application.ApplicationStorage, zapLogger *zap.Logger) {
 	r := rootRouter.PathPrefix("/api/v1").Subrouter()
 
-	MountApplicationRouter(r, applicationStorage)
+	MountApplicationRouter(r, applicationStorage, zapLogger)
 
 	r.Use(middleware.Recovery)
 
