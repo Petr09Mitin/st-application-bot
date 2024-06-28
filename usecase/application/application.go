@@ -9,6 +9,7 @@ import (
 type ApplicationStorage interface {
 	Store(ctx context.Context, application *domain.Application) (newApplication *domain.Application, err error)
 	GetAll(ctx context.Context) (applications []*domain.Application, err error)
+	GetByTgUserID(ctx context.Context, tgUserID int64) (application *domain.Application, err error)
 }
 
 type Service struct {
@@ -21,7 +22,22 @@ func NewService(storage ApplicationStorage) *Service {
 	}
 }
 
+func (s *Service) GetApplicationByTgUserID(ctx context.Context, tgUserID int64) (application *domain.Application, err error) {
+	application, err = s.storage.GetByTgUserID(ctx, tgUserID)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func (s *Service) CreateApplication(ctx context.Context, application *domain.Application) (newApplication *domain.Application, err error) {
+	_, err = s.storage.GetByTgUserID(ctx, application.TelegramUserID)
+	if err != domain.ErrApplicationNotFound {
+		err = domain.ErrApplicationAlreadyExists
+		return
+	}
+
 	newApplication, err = s.storage.Store(ctx, application)
 	if err != nil {
 		return

@@ -38,4 +38,6 @@ const (
 	IncorrectFullNameFormatText = `<b>Неверный формат ФИО.</b>
 
 <i>Укажи ФИО в формате: Иванов Иван Иванович</i>`
+	InternalErrorText            = `Что-то пошло не так... Чтобы начать заново, нажми /start`
+	ApplicationAlreadyExistsText = `Ты уже подавал заявку! Пожалуйста, дождись, пока она будет рассмотрена.`
 )

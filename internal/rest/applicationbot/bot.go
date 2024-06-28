@@ -121,6 +121,17 @@ func (b *ApplicationBot) ValidateCallbackQuery(update *echotron.Update) (message
 func (b *ApplicationBot) HandleTextMessage(messageText string) (err error) {
 	switch messageText {
 	case StartCommand:
+		_, err = b.service.GetApplicationByTgUserID(context.Background(), b.application.TelegramUserID)
+		if err != domain.ErrApplicationNotFound {
+			if err != nil {
+				b.SendMessage(InternalErrorText, b.chatID, OptionsWithStartKeyboard)
+				return
+			}
+
+			b.SendMessage(ApplicationAlreadyExistsText, b.chatID, OptionsEmpty)
+			return
+		}
+
 		_, err = b.SendMessage(IntroductionText, b.chatID, OptionsWithCancelKeyboard)
 		if err != nil {
 			return
@@ -158,7 +169,7 @@ func (b *ApplicationBot) HandlePlainTextMessage(messageText string) (err error) 
 
 			return
 		}
-		
+
 		b.application.FullName = messageText
 		_, err = b.SendMessage(PhonePromptText, b.chatID, OptionsWithCancelKeyboard)
 		if err != nil {
@@ -199,6 +210,12 @@ func (b *ApplicationBot) HandlePlainTextMessage(messageText string) (err error) 
 		b.application.SourceOfInformation = messageText
 		_, err = b.service.CreateApplication(context.Background(), b.application)
 		if err != nil {
+			if err == domain.ErrApplicationAlreadyExists {
+				b.SendMessage(ApplicationAlreadyExistsText, b.chatID, OptionsEmpty)
+				return
+			}
+
+			b.SendMessage(InternalErrorText, b.chatID, OptionsWithStartKeyboard)
 			return
 		}
 

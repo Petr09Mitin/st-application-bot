@@ -10,7 +10,7 @@ import (
 )
 
 func MountApplicationRouter(root *mux.Router, applicationStorage application.ApplicationStorage, logger *zap.Logger) {
-	r := root.PathPrefix("/application").Subrouter()
+	r := root.PathPrefix("/applications").Subrouter()
 
 	h := applicationrest.NewApplicationHandler(applicationStorage, logger)
 
