@@ -27,7 +27,9 @@ const (
 		purpose_of_application,
 		source_of_information,
 		created_at,
-		updated_at;
+		updated_at,
+		resolved,
+		approved;
 		`
 	getAllAfterTimeQuery = `
 	SELECT id,
@@ -38,7 +40,9 @@ const (
 		purpose_of_application,
 		source_of_information,
 		created_at,
-		updated_at
+		updated_at,
+		resolved,
+		approved
 	FROM public.application
 	WHERE created_at > $1
 	ORDER BY created_at DESC;
@@ -52,7 +56,9 @@ const (
 		purpose_of_application,
 		source_of_information,
 		created_at,
-		updated_at
+		updated_at,
+		resolved,
+		approved
 		FROM public.application
 		WHERE tg_user_id = $1;
 	`
@@ -65,9 +71,27 @@ const (
 		purpose_of_application,
 		source_of_information,
 		created_at,
-		updated_at
+		updated_at,
+		resolved,
+		approved
 		FROM public.application
-		ORDER BY created_at DESC;
+		ORDER BY created_at ASC;
+	`
+	getUnresolvedQuery = `
+	SELECT id,
+		tg_user_id,
+		full_name,
+		phone,
+		district,
+		purpose_of_application,
+		source_of_information,
+		created_at,
+		updated_at,
+		resolved,
+		approved
+		FROM public.application
+		WHERE resolved = false
+		ORDER BY created_at ASC;
 	`
 )
 
@@ -102,6 +126,8 @@ func (a *Application) Store(ctx context.Context, application *domain.Application
 		&newApplication.SourceOfInformation,
 		&newApplication.CreatedAt,
 		&newApplication.UpdatedAt,
+		&newApplication.Resolved,
+		&newApplication.Approved,
 	)
 	if err != nil {
 		return
@@ -133,6 +159,8 @@ func (a *Application) GetAllAfterTime(ctx context.Context, timeFilter time.Time)
 			&application.SourceOfInformation,
 			&application.CreatedAt,
 			&application.UpdatedAt,
+			&application.Resolved,
+			&application.Approved,
 		)
 		if err != nil {
 			return
@@ -160,6 +188,8 @@ func (a *Application) GetByTgUserID(ctx context.Context, tgUserID int64) (applic
 		&application.SourceOfInformation,
 		&application.CreatedAt,
 		&application.UpdatedAt,
+		&application.Resolved,
+		&application.Approved,
 	)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -196,6 +226,45 @@ func (a *Application) GetAll(ctx context.Context) (applications []*domain.Applic
 			&application.SourceOfInformation,
 			&application.CreatedAt,
 			&application.UpdatedAt,
+			&application.Resolved,
+			&application.Approved,
+		)
+		if err != nil {
+			return
+		}
+
+		applications = append(applications, application)
+	}
+
+	return
+}
+
+func (a *Application) GetUnresolved(ctx context.Context) (applications []*domain.Application, err error) {
+	rows, err := a.db.Query(
+		context.Background(),
+		getUnresolvedQuery,
+	)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	applications = make([]*domain.Application, 0)
+
+	for rows.Next() {
+		application := &domain.Application{}
+		err = rows.Scan(
+			&application.ID,
+			&application.TelegramUserID,
+			&application.FullName,
+			&application.PhoneNumber,
+			&application.District,
+			&application.PurposeOfApplication,
+			&application.SourceOfInformation,
+			&application.CreatedAt,
+			&application.UpdatedAt,
+			&application.Resolved,
+			&application.Approved,
 		)
 		if err != nil {
 			return

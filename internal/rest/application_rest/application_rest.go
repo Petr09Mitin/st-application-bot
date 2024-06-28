@@ -20,8 +20,8 @@ func NewApplicationHandler(applicationStorage application.ApplicationStorage, lo
 	}
 }
 
-func (a *ApplicationHandler) HandleGetAllApplications(w http.ResponseWriter, r *http.Request) {
-	applications, err := a.service.GetAllApplications(r.Context())
+func (a *ApplicationHandler) HandleGetUnresolvedApplications(w http.ResponseWriter, r *http.Request) {
+	applications, err := a.service.GetUnresolvedApplications(r.Context())
 	if err != nil {
 		a.logger.Error(err.Error())
 		json.ServeJSONError(r.Context(), w, err)

@@ -14,5 +14,5 @@ func MountApplicationRouter(root *mux.Router, applicationStorage application.App
 
 	h := applicationrest.NewApplicationHandler(applicationStorage, logger)
 
-	r.HandleFunc("/", h.HandleGetAllApplications).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/", h.HandleGetUnresolvedApplications).Methods(http.MethodGet, http.MethodOptions)
 }

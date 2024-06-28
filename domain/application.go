@@ -10,6 +10,8 @@ type Application struct {
 	District             string    `json:"district"`
 	PurposeOfApplication string    `json:"purposeOfApplication"`
 	SourceOfInformation  string    `json:"sourceOfInformation"`
+	Resolved             bool      `json:"resolved"`
+	Approved             bool      `json:"approved"`
 	CreatedAt            time.Time `json:"createdAt"`
 	UpdatedAt            time.Time `json:"updatedAt"`
 }

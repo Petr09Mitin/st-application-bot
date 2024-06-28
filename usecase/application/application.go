@@ -9,6 +9,7 @@ import (
 type ApplicationStorage interface {
 	Store(ctx context.Context, application *domain.Application) (newApplication *domain.Application, err error)
 	GetAll(ctx context.Context) (applications []*domain.Application, err error)
+	GetUnresolved(ctx context.Context) (applications []*domain.Application, err error)
 	GetByTgUserID(ctx context.Context, tgUserID int64) (application *domain.Application, err error)
 }
 
@@ -48,6 +49,15 @@ func (s *Service) CreateApplication(ctx context.Context, application *domain.App
 
 func (s *Service) GetAllApplications(ctx context.Context) (applications []*domain.Application, err error) {
 	applications, err = s.storage.GetAll(ctx)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (s *Service) GetUnresolvedApplications(ctx context.Context) (applications []*domain.Application, err error) {
+	applications, err = s.storage.GetUnresolved(ctx)
 	if err != nil {
 		return
 	}
