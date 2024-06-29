@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/NicoNex/echotron/v3"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"github.com/st-application-bot/internal/config"
@@ -16,7 +17,10 @@ import (
 func MountRootRouter(rootRouter *mux.Router, applicationStorage application.ApplicationStorage, zapLogger *zap.Logger) {
 	r := rootRouter.PathPrefix("/api/v1").Subrouter()
 
-	MountApplicationRouter(r, applicationStorage, zapLogger)
+	tgBotToken := os.Getenv(config.TGBotTokenEnvName)
+	api := echotron.NewAPI(tgBotToken)
+
+	MountApplicationRouter(r, applicationStorage, zapLogger, &api)
 
 	r.Use(middleware.Recovery)
 

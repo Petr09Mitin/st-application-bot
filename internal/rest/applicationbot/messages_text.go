@@ -1,7 +1,7 @@
 package applicationbot
 
 const (
-	ActiveChatLink = `...chat link...`
+	ActiveChatLink = `https://t.me/+r5cV5xhf37g0Mzli`
 
 	IntroductionText = `Дорогой Брат! 
 
@@ -40,4 +40,6 @@ const (
 <i>Укажи ФИО в формате: Иванов Иван Иванович</i>`
 	InternalErrorText            = `Что-то пошло не так... Чтобы начать заново, нажми /start`
 	ApplicationAlreadyExistsText = `Ты уже подавал заявку! Пожалуйста, дождись, пока она будет рассмотрена.`
+	OnlyUsersWithUsernameText    = `Чтобы взаимодействовать с ботом, пожалуйста, установи уникальное имя пользователя!
+<i>Уникальное имя этого бота - @north_tribune_applications_bot</i>`
 )

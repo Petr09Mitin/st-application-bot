@@ -47,21 +47,26 @@ func GetApplicationBotConstructor(token string, storage application.ApplicationS
 func (b *ApplicationBot) Update(update *echotron.Update) {
 	var err error
 	if update.Message == nil && update.CallbackQuery == nil {
-		_, err := b.SendMessage(NoMessageText, b.chatID, OptionsWithStartKeyboard)
-		if err != nil {
-			return
-		}
+		return
 	}
 
 	messageText := ""
 
 	if update.Message != nil {
+		if update.Message.Chat.Type != "private" {
+			return
+		}
+
 		messageText, err = b.ValidateTextMessage(update)
 		if err != nil {
 			b.logger.Error(err.Error())
 			return
 		}
 	} else if update.CallbackQuery != nil {
+		if update.CallbackQuery.Message.Chat.Type != "private" {
+			return
+		}
+
 		messageText, err = b.ValidateCallbackQuery(update)
 		if err != nil {
 			b.logger.Error(err.Error())
@@ -86,6 +91,16 @@ func (b *ApplicationBot) ValidateTextMessage(update *echotron.Update) (messageTe
 	}
 
 	b.application.TelegramUserID = update.Message.From.ID
+
+	if update.Message.From.Username == "" {
+		b.currentState = InitialState
+		_, err = b.SendMessage(OnlyUsersWithUsernameText, b.chatID, OptionsEmpty)
+		if err != nil {
+			return
+		}
+	}
+
+	b.application.TelegramUsername = update.Message.From.Username
 
 	messageText = strings.TrimSpace(update.Message.Text)
 	if messageText == "" {

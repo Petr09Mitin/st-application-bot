@@ -11,6 +11,9 @@ type ApplicationStorage interface {
 	GetAll(ctx context.Context) (applications []*domain.Application, err error)
 	GetUnresolved(ctx context.Context) (applications []*domain.Application, err error)
 	GetByTgUserID(ctx context.Context, tgUserID int64) (application *domain.Application, err error)
+	GetAllTargetChats(ctx context.Context) (chats []*domain.TargetChat, err error)
+	GetByID(ctx context.Context, applicationID uint) (application *domain.Application, err error)
+	Update(ctx context.Context, application *domain.Application) (updatedApplication *domain.Application, err error)
 }
 
 type Service struct {
@@ -58,6 +61,49 @@ func (s *Service) GetAllApplications(ctx context.Context) (applications []*domai
 
 func (s *Service) GetUnresolvedApplications(ctx context.Context) (applications []*domain.Application, err error) {
 	applications, err = s.storage.GetUnresolved(ctx)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (s *Service) ApproveApplication(ctx context.Context, applicationID uint) (application *domain.Application, err error) {
+	application, err = s.storage.GetByID(ctx, applicationID)
+	if err != nil {
+		return
+	}
+
+	application.Approved = true
+	application.Resolved = true
+
+	application, err = s.storage.Update(ctx, application)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (s *Service) RejectApplication(ctx context.Context, applicationID uint) (application *domain.Application, err error) {
+	application, err = s.storage.GetByID(ctx, applicationID)
+	if err != nil {
+		return
+	}
+
+	application.Approved = false
+	application.Resolved = true
+
+	application, err = s.storage.Update(ctx, application)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (s *Service) GetAllTargetChats(ctx context.Context) (chats []*domain.TargetChat, err error) {
+	chats, err = s.storage.GetAllTargetChats(ctx)
 	if err != nil {
 		return
 	}
