@@ -98,6 +98,8 @@ func (b *ApplicationBot) ValidateTextMessage(update *echotron.Update) (messageTe
 		if err != nil {
 			return
 		}
+
+		return
 	}
 
 	b.application.TelegramUsername = update.Message.From.Username
