@@ -14,12 +14,10 @@ import (
 type ConversationState int
 
 var (
-	InitialState                ConversationState = 0
-	WaitingForName              ConversationState = 1
-	WaitingForPhone             ConversationState = 2
-	WaitingForDistrict          ConversationState = 3
-	WaitingForPurpose           ConversationState = 4
-	WaitingForInformationSource ConversationState = 5
+	InitialState       ConversationState = 0
+	WaitingForName     ConversationState = 1
+	WaitingForDistrict ConversationState = 3
+	WaitingForPurpose  ConversationState = 4
 )
 
 type ApplicationBot struct {
@@ -188,43 +186,25 @@ func (b *ApplicationBot) HandlePlainTextMessage(messageText string) (err error) 
 		}
 
 		b.application.FullName = messageText
-		_, err = b.SendMessage(PhonePromptText, b.chatID, OptionsWithCancelKeyboard)
-		if err != nil {
-			return
-		}
-		b.currentState = WaitingForPhone
-	case WaitingForPhone:
-		if !validators.IsValidPhone(messageText) {
-			_, err = b.SendMessage(IncorrectPhoneFormatText, b.chatID, OptionsWithCancelKeyboard)
-			if err != nil {
-				return
-			}
 
-			return
-		}
-
-		b.application.PhoneNumber = messageText
 		_, err = b.SendMessage(DistrictPromptText, b.chatID, OptionsWithCancelKeyboard)
 		if err != nil {
 			return
 		}
+
 		b.currentState = WaitingForDistrict
 	case WaitingForDistrict:
 		b.application.District = messageText
+
 		_, err = b.SendMessage(PurposePromptText, b.chatID, OptionsWithCancelKeyboard)
 		if err != nil {
 			return
 		}
+
 		b.currentState = WaitingForPurpose
 	case WaitingForPurpose:
 		b.application.PurposeOfApplication = messageText
-		_, err = b.SendMessage(InformationSourcePromptText, b.chatID, OptionsWithCancelKeyboard)
-		if err != nil {
-			return
-		}
-		b.currentState = WaitingForInformationSource
-	case WaitingForInformationSource:
-		b.application.SourceOfInformation = messageText
+
 		_, err = b.service.CreateApplication(context.Background(), b.application)
 		if err != nil {
 			if err == domain.ErrApplicationAlreadyExists {
