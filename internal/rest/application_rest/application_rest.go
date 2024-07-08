@@ -2,10 +2,10 @@ package applicationrest
 
 import (
 	"net/http"
-	"sync"
 
 	"github.com/NicoNex/echotron/v3"
 	"github.com/st-application-bot/domain"
+	"github.com/st-application-bot/internal/rest/applicationbot"
 	"github.com/st-application-bot/internal/rest/utils"
 	"github.com/st-application-bot/pkg/json"
 	"github.com/st-application-bot/usecase/application"
@@ -52,26 +52,11 @@ func (a *ApplicationHandler) HandleApproveApplication(w http.ResponseWriter, r *
 		return
 	}
 
-	targetChats, err := a.service.GetAllTargetChats(r.Context())
+	_, err = a.api.SendMessage(applicationbot.ApproveText, application.TelegramUserID, applicationbot.OptionsEmpty)
 	if err != nil {
 		a.logger.Error(err.Error())
-		json.ServeJSONError(r.Context(), w, domain.ErrUnableToApproveApplication)
+		json.ServeJSONError(r.Context(), w, domain.ErrUnableToSendMessage)
 		return
-	}
-
-	wg := &sync.WaitGroup{}
-	wg.Add(len(targetChats))
-
-	for _, chat := range targetChats {
-		go func(chat *domain.TargetChat) {
-			defer wg.Done()
-			_, err = a.api.ApproveChatJoinRequest(chat.TelegramChatID, application.TelegramUserID)
-			if err != nil {
-				a.logger.Error(err.Error())
-				return
-			}
-
-		}(chat)
 	}
 
 	json.ServeJSONBody(r.Context(), w, application, http.StatusOK)
@@ -92,27 +77,11 @@ func (a *ApplicationHandler) HandleRejectApplication(w http.ResponseWriter, r *h
 		return
 	}
 
-	targetChats, err := a.service.GetAllTargetChats(r.Context())
+	_, err = a.api.SendMessage(applicationbot.RejectText, application.TelegramUserID, applicationbot.OptionsEmpty)
 	if err != nil {
 		a.logger.Error(err.Error())
-		json.ServeJSONError(r.Context(), w, domain.ErrUnableToApproveApplication)
+		json.ServeJSONError(r.Context(), w, domain.ErrUnableToSendMessage)
 		return
-	}
-
-	wg := &sync.WaitGroup{}
-	wg.Add(len(targetChats))
-
-	for _, chat := range targetChats {
-		go func(chat *domain.TargetChat) {
-			defer wg.Done()
-			a.logger.Info("tg chat id: ", zap.Int64("tg chat id", chat.TelegramChatID))
-			_, err = a.api.DeclineChatJoinRequest(chat.TelegramChatID, application.TelegramUserID)
-			if err != nil {
-				a.logger.Error(err.Error())
-				return
-			}
-
-		}(chat)
 	}
 
 	json.ServeJSONBody(r.Context(), w, application, http.StatusOK)
