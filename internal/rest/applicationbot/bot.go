@@ -147,10 +147,16 @@ func (b *ApplicationBot) HandleTextMessage(messageText string) (err error) {
 			return
 		}
 
-		_, err = b.SendMessage(IntroductionText, b.chatID, OptionsWithCancelKeyboard)
+		_, err = b.SendMessage(IntroductionText, b.chatID, OptionsEmpty)
 		if err != nil {
 			return
 		}
+
+		_, err = b.SendMessage(FullNamePromptText, b.chatID, OptionsWithCancelKeyboard)
+		if err != nil {
+			return
+		}
+
 		b.currentState = WaitingForName
 	case CancelCommand:
 		_, err = b.SendMessage(CancelText, b.chatID, OptionsWithStartKeyboard)
