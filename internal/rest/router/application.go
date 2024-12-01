@@ -16,6 +16,8 @@ func MountApplicationRouter(root *mux.Router, applicationStorage application.App
 	h := applicationrest.NewApplicationHandler(applicationStorage, logger, api)
 
 	r.HandleFunc("/", h.HandleGetUnresolvedApplications).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/approved", h.HandleGetApprovedApplications).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/rejected", h.HandleGetRejectedApplications).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/{applicationID:[0-9]+}/approve", h.HandleApproveApplication).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/{applicationID:[0-9]+}/reject", h.HandleRejectApplication).Methods(http.MethodPost, http.MethodOptions)
 }

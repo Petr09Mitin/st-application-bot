@@ -37,6 +37,28 @@ func (a *ApplicationHandler) HandleGetUnresolvedApplications(w http.ResponseWrit
 	json.ServeJSONBody(r.Context(), w, applications, http.StatusOK)
 }
 
+func (a *ApplicationHandler) HandleGetApprovedApplications(w http.ResponseWriter, r *http.Request) {
+	applications, err := a.service.GetApprovedApplications(r.Context())
+	if err != nil {
+		a.logger.Error(err.Error())
+		json.ServeJSONError(r.Context(), w, err)
+		return
+	}
+
+	json.ServeJSONBody(r.Context(), w, applications, http.StatusOK)
+}
+
+func (a *ApplicationHandler) HandleGetRejectedApplications(w http.ResponseWriter, r *http.Request) {
+	applications, err := a.service.GetRejectedApplications(r.Context())
+	if err != nil {
+		a.logger.Error(err.Error())
+		json.ServeJSONError(r.Context(), w, err)
+		return
+	}
+
+	json.ServeJSONBody(r.Context(), w, applications, http.StatusOK)
+}
+
 func (a *ApplicationHandler) HandleApproveApplication(w http.ResponseWriter, r *http.Request) {
 	applicationID, err := utils.GetApplicationIDMuxVar(r)
 	if err != nil {

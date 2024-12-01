@@ -111,6 +111,36 @@ const (
 		resolved,
 		approved;
 	`
+	getApprovedQuery = `
+	SELECT id,
+		tg_user_id,
+		tg_username,
+		full_name,
+		district,
+		purpose_of_application,
+		created_at,
+		updated_at,
+		resolved,
+		approved
+		FROM public.application
+		WHERE approved = true
+		ORDER BY created_at DESC;
+	`
+	getRejectedQuery = `
+	SELECT id,
+		tg_user_id,
+		tg_username,
+		full_name,
+		district,
+		purpose_of_application,
+		created_at,
+		updated_at,
+		resolved,
+		approved
+		FROM public.application
+		WHERE approved = false
+		ORDER BY created_at ASC;
+	`
 )
 
 type Application struct {
@@ -341,6 +371,78 @@ func (a *Application) Update(ctx context.Context, application *domain.Applicatio
 		}
 
 		return
+	}
+
+	return
+}
+
+func (a *Application) GetApproved(ctx context.Context) (applications []*domain.Application, err error) {
+	rows, err := a.db.Query(
+		context.Background(),
+		getApprovedQuery,
+	)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	applications = make([]*domain.Application, 0)
+
+	for rows.Next() {
+		application := &domain.Application{}
+		err = rows.Scan(
+			&application.ID,
+			&application.TelegramUserID,
+			&application.TelegramUsername,
+			&application.FullName,
+			&application.District,
+			&application.PurposeOfApplication,
+			&application.CreatedAt,
+			&application.UpdatedAt,
+			&application.Resolved,
+			&application.Approved,
+		)
+		if err != nil {
+			return
+		}
+
+		applications = append(applications, application)
+	}
+
+	return
+}
+
+func (a *Application) GetRejected(ctx context.Context) (applications []*domain.Application, err error) {
+	rows, err := a.db.Query(
+		context.Background(),
+		getRejectedQuery,
+	)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	applications = make([]*domain.Application, 0)
+
+	for rows.Next() {
+		application := &domain.Application{}
+		err = rows.Scan(
+			&application.ID,
+			&application.TelegramUserID,
+			&application.TelegramUsername,
+			&application.FullName,
+			&application.District,
+			&application.PurposeOfApplication,
+			&application.CreatedAt,
+			&application.UpdatedAt,
+			&application.Resolved,
+			&application.Approved,
+		)
+		if err != nil {
+			return
+		}
+
+		applications = append(applications, application)
 	}
 
 	return

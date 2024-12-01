@@ -10,6 +10,8 @@ type ApplicationStorage interface {
 	Store(ctx context.Context, application *domain.Application) (newApplication *domain.Application, err error)
 	GetAll(ctx context.Context) (applications []*domain.Application, err error)
 	GetUnresolved(ctx context.Context) (applications []*domain.Application, err error)
+	GetApproved(ctx context.Context) (applications []*domain.Application, err error)
+	GetRejected(ctx context.Context) (applications []*domain.Application, err error)
 	GetByTgUserID(ctx context.Context, tgUserID int64) (application *domain.Application, err error)
 	GetAllTargetChats(ctx context.Context) (chats []*domain.TargetChat, err error)
 	GetByID(ctx context.Context, applicationID uint) (application *domain.Application, err error)
@@ -104,6 +106,24 @@ func (s *Service) RejectApplication(ctx context.Context, applicationID uint) (ap
 
 func (s *Service) GetAllTargetChats(ctx context.Context) (chats []*domain.TargetChat, err error) {
 	chats, err = s.storage.GetAllTargetChats(ctx)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (s *Service) GetApprovedApplications(ctx context.Context) (applications []*domain.Application, err error) {
+	applications, err = s.storage.GetApproved(ctx)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (s *Service) GetRejectedApplications(ctx context.Context) (applications []*domain.Application, err error) {
+	applications, err = s.storage.GetRejected(ctx)
 	if err != nil {
 		return
 	}
