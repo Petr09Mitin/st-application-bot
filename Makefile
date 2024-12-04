@@ -1,6 +1,5 @@
 app-build:
-	go build cmd/app.go
+	docker build -t st-application-bot/main -f cmd/Dockerfile .
 
-run:
-	make app-build
-	sudo ./app
+docker-run:
+	docker-compose up -d

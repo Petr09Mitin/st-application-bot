@@ -1,0 +1,48 @@
+version: '3.9'
+services:
+  postgresdb:
+    image: postgres:17.2
+    container_name: postgres_container
+    environment:
+      - POSTGRES_USER=${PG_USER}
+      - POSTGRES_PASSWORD=${PG_PASSWORD}
+      - POSTGRES_DB=${PG_DBNAME}
+    ports:
+      - 5431:5432
+    volumes:
+      - pg_data:/var/lib/postgresql/data/
+
+  app:
+    image: st-application-bot/main
+    container_name: main
+    environment:
+      - PG_USER=${PG_USER}
+      - PG_PASSWORD=${PG_PASSWORD}
+      - PG_DBNAME=${PG_DBNAME}
+      - PG_HOST=${PG_HOST}
+      - PG_PORT=${PG_PORT}
+    tty: true
+    ports:
+      - 8078:8078
+      - 8080:8080
+    restart: always
+    volumes:
+      - .:/app
+      - ./volumes/logs/:/var/log/st_applications/
+    depends_on:
+      - postgresdb
+  
+  nginx:
+    image: nginx:1.27.3
+    restart: always
+    volumes:
+      - ./config/nginx/:/etc/nginx/
+      - /etc/letsencrypt/:/etc/letsencrypt/
+    ports:
+      - 3002:80
+      - 3001:443
+    depends_on:
+      - app
+
+volumes:
+  pg_data:
