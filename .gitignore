@@ -5,3 +5,4 @@ creds.txt
 virt.cer
 notes.txt
 volumes/build/*
+backup.sql
