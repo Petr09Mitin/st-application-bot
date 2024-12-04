@@ -39,8 +39,8 @@ services:
       - ./config/nginx/:/etc/nginx/
       - /etc/letsencrypt/:/etc/letsencrypt/
     ports:
-      - 3002:80
-      - 3001:443
+      - 80:80
+      - 443:443
     depends_on:
       - app
 
