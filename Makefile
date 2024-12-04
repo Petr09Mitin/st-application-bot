@@ -3,3 +3,6 @@ app-build:
 
 docker-run:
 	docker-compose up -d
+
+migrate:
+	cd ./internal/repository/postgres/migrations && tern migrate && cd ../../../../
