@@ -41,7 +41,7 @@ jobs:
         context: .
         file: ./cmd/Dockerfile
         push: true
-        tags: st-application-bot/main:latest
+        tags: petr09mitin/st-application-bot:latest
 
   # deploy:
   #   name: Deploy to VM
