@@ -43,26 +43,26 @@ jobs:
         push: true
         tags: petr09mitin/st-application-bot:latest
 
-  # deploy:
-  #   name: Deploy to VM
-  #   needs: [ linter ]
-  #   runs-on: ubuntu-latest
+  deploy:
+    name: Deploy to VM
+    needs: [ build ]
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #   - name: Migrate, build and run
-  #     uses: appleboy/ssh-action@v1.2.0
-  #     with:
-  #       host: ${{ secrets.HOST }}
-  #       username: ${{ secrets.USERNAME }}
-  #       key: ${{ secrets.SSH_KEY }}
-  #       passphrase: ${{ secrets.SSH_PASSPHRASE }}
-  #       script: |
-  #         cd ./st-application-bot
-  #         git checkout main
-  #         git pull
-  #         export PATH=$PATH:/usr/local/go/bin
-  #         export PATH=$PATH:$(go env GOPATH)/bin
-  #         go install github.com/jackc/tern/v2@latest
-  #         make migrate
-  #         docker compose down
-  #         make docker-run
+    steps:
+    - name: Migrate, build and run
+      uses: appleboy/ssh-action@v1.2.0
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        script: |
+          cd ./st-application-bot
+          git checkout main
+          git pull
+          export PATH=$PATH:/usr/local/go/bin
+          export PATH=$PATH:$(go env GOPATH)/bin
+          go install github.com/jackc/tern/v2@latest
+          make migrate
+          docker compose pull
+          docker compose up -d

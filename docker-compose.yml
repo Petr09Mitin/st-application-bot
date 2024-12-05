@@ -13,7 +13,7 @@ services:
       - pg_data:/var/lib/postgresql/data/
 
   app:
-    image: st-application-bot/main
+    image: petr09mitin/st-application-bot:latest
     container_name: main
     env_file:
       - .env
