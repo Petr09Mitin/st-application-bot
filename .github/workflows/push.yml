@@ -33,10 +33,11 @@ jobs:
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
           cd ./st-application-bot
-          sudo git checkout main
-          sudo git pull
+          git checkout main
+          git pull
+          export PATH=$PATH:/usr/local/go/bin
           export PATH=$PATH:$(go env GOPATH)/bin
           go install github.com/jackc/tern/v2@latest
           make migrate
-          sudo docker compose down
-          sudo make docker-run
+          docker compose down
+          make docker-run
