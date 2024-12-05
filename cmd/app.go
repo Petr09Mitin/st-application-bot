@@ -56,7 +56,6 @@ func main() {
 		if err != nil {
 			zapLogger.Error(err.Error())
 		}
-
-		time.Sleep(5 * time.Second)
+		time.Sleep(3 * time.Second)
 	}
 }
