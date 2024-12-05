@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Execute commands over ssh
+    - name: Migrate, build and run
       uses: appleboy/ssh-action@v1.2.0
       with:
         host: ${{ secrets.HOST }}
