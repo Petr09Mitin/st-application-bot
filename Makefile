@@ -1,8 +1,8 @@
 app-build:
-	docker build -t st-application-bot/main -f cmd/Dockerfile .
+	docker build -t st-application-bot/main -f cmd/Dockerfile . --network=host
 
 docker-run:
-	docker-compose up -d
+	make app-build && docker compose up -d
 
 migrate:
 	cd ./internal/repository/postgres/migrations && tern migrate && cd ../../../../
