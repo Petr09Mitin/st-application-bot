@@ -7,7 +7,6 @@ import (
 
 	"github.com/NicoNex/echotron/v3"
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 	"github.com/st-application-bot/domain"
 	"github.com/st-application-bot/internal/config"
 	"github.com/st-application-bot/internal/repository/postgres"
@@ -20,11 +19,6 @@ func main() {
 	zapLogger, err := logger.NewZapLogger(logger.DefaultOutputPaths)
 	if err != nil {
 		fmt.Println(err)
-		return
-	}
-
-	if err := godotenv.Load(config.DotenvFilePath); err != nil {
-		zapLogger.Error(err.Error())
 		return
 	}
 

@@ -15,12 +15,8 @@ services:
   app:
     image: st-application-bot/main
     container_name: main
-    environment:
-      - PG_USER=${PG_USER}
-      - PG_PASSWORD=${PG_PASSWORD}
-      - PG_DBNAME=${PG_DBNAME}
-      - PG_HOST=${PG_HOST}
-      - PG_PORT=${PG_PORT}
+    env_file:
+      - .env
     tty: true
     ports:
       - 8078:8078

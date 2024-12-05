@@ -20,6 +20,7 @@ jobs:
 
   build:
     name: Build Docker image
+    needs: [ linter ]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout

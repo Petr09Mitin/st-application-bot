@@ -7,7 +7,6 @@ RUN apk update && apk add git && apk add bash && apk add build-base
 
 # Copy the source from the current directory to the Working Directory inside the container
 COPY . .
-COPY .env /
 
 RUN --mount=type=cache,target=/go/pkg/mod/ \
     --mount=type=bind,source=go.sum,target=go.sum \
@@ -22,7 +21,6 @@ RUN --mount=type=cache,target="/root/.cache/go-build" \
 FROM gcr.io/distroless/base-debian11 AS build-release-stage
 
 COPY --from=build-stage /build/app /build/app
-COPY --from=build-stage .env .
 
 EXPOSE 8078 8080
 
