@@ -140,11 +140,11 @@ func (b *ApplicationBot) HandleTextMessage(messageText string) (err error) {
 		_, err = b.service.GetApplicationByTgUserID(context.Background(), b.application.TelegramUserID)
 		if err != domain.ErrApplicationNotFound {
 			if err != nil {
-				b.SendMessage(InternalErrorText, b.chatID, OptionsWithStartKeyboard)
+				_, err = b.SendMessage(InternalErrorText, b.chatID, OptionsWithStartKeyboard)
 				return
 			}
 
-			b.SendMessage(ApplicationAlreadyExistsText, b.chatID, OptionsEmpty)
+			_, err = b.SendMessage(ApplicationAlreadyExistsText, b.chatID, OptionsEmpty)
 			return
 		}
 
@@ -215,11 +215,11 @@ func (b *ApplicationBot) HandlePlainTextMessage(messageText string) (err error) 
 		_, err = b.service.CreateApplication(context.Background(), b.application)
 		if err != nil {
 			if err == domain.ErrApplicationAlreadyExists {
-				b.SendMessage(ApplicationAlreadyExistsText, b.chatID, OptionsEmpty)
+				_, err = b.SendMessage(ApplicationAlreadyExistsText, b.chatID, OptionsEmpty)
 				return
 			}
 
-			b.SendMessage(InternalErrorText, b.chatID, OptionsWithStartKeyboard)
+			_, err = b.SendMessage(InternalErrorText, b.chatID, OptionsWithStartKeyboard)
 			return
 		}
 

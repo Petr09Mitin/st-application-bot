@@ -6,3 +6,5 @@ virt.cer
 notes.txt
 volumes/build/*
 backup.sql
+id_rsa
+id_rsa.pub

@@ -1,0 +1,44 @@
+name: Lint and deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  linter:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.58
+
+  deploy:
+    name: Deploy to VM
+    needs: [ linter ]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Execute commands over ssh
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        script: |
+          cd ./st-application-bot
+          cd ./internal/repository/postgres/migrations
+          sudo tern migrate
+          cd ../../../../
+          sudo docker builder prune -f
+          sudo git checkout dev
+          sudo git pull
+          sudo make docker-build
+          sudo docker-compose down
+          sudo docker-compose up -d
