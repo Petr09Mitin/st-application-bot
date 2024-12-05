@@ -8,7 +8,7 @@ type Application struct {
 	TelegramUsername     string    `json:"tgUsername"`
 	FullName             string    `json:"fullName"`
 	District             string    `json:"district"`
-	PurposeOfApplication string    `json:"purposeOfApplication"`
+	IsSevChelParticipant bool      `json:"isSevChelParticipant"`
 	Resolved             bool      `json:"resolved"`
 	Approved             bool      `json:"approved"`
 	CreatedAt            time.Time `json:"createdAt"`

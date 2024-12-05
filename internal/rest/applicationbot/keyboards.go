@@ -23,6 +23,26 @@ var (
 			},
 		},
 	}
+	YesOrNoWithCancelKeyboard = echotron.InlineKeyboardMarkup{
+		InlineKeyboard: [][]echotron.InlineKeyboardButton{
+			{
+				{
+					Text:         "Да",
+					CallbackData: YesCommand,
+				},
+				{
+					Text:         "Нет",
+					CallbackData: NoCommand,
+				},
+			},
+			{
+				{
+					Text:         "Отмена",
+					CallbackData: CancelCommand,
+				},
+			},
+		},
+	}
 	OptionsEmpty = &echotron.MessageOptions{
 		ParseMode: echotron.HTML,
 	}
@@ -33,5 +53,9 @@ var (
 	OptionsWithCancelKeyboard = &echotron.MessageOptions{
 		ParseMode:   echotron.HTML,
 		ReplyMarkup: CancelKeyboard,
+	}
+	OptionsWithYesOrNoWithCancelKeyboard = &echotron.MessageOptions{
+		ParseMode:   echotron.HTML,
+		ReplyMarkup: YesOrNoWithCancelKeyboard,
 	}
 )

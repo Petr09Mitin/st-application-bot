@@ -14,10 +14,11 @@ import (
 type ConversationState int
 
 var (
-	InitialState       ConversationState = 0
-	WaitingForName     ConversationState = 1
-	WaitingForDistrict ConversationState = 3
-	WaitingForPurpose  ConversationState = 4
+	InitialState                   ConversationState = 0
+	WaitingForName                 ConversationState = 1
+	WaitingForDistrict             ConversationState = 2
+	WaitingForIsSevChelParticipant ConversationState = 3
+	WaitingForPurpose              ConversationState = 4
 )
 
 type ApplicationBot struct {
@@ -202,14 +203,14 @@ func (b *ApplicationBot) HandlePlainTextMessage(messageText string) (err error) 
 	case WaitingForDistrict:
 		b.application.District = messageText
 
-		_, err = b.SendMessage(PurposePromptText, b.chatID, OptionsWithCancelKeyboard)
+		_, err = b.SendMessage(IsSevChelParticipantPromptText, b.chatID, OptionsWithYesOrNoWithCancelKeyboard)
 		if err != nil {
 			return
 		}
 
-		b.currentState = WaitingForPurpose
-	case WaitingForPurpose:
-		b.application.PurposeOfApplication = messageText
+		b.currentState = WaitingForIsSevChelParticipant
+	case WaitingForIsSevChelParticipant:
+		b.application.IsSevChelParticipant = messageText == YesCommand
 
 		_, err = b.service.CreateApplication(context.Background(), b.application)
 		if err != nil {
