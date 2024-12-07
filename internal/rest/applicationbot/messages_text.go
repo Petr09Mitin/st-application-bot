@@ -1,5 +1,11 @@
 package applicationbot
 
+import (
+	"fmt"
+
+	"github.com/st-application-bot/domain"
+)
+
 const (
 	SubscriptionBotLink = `https://t.me/SevTribunaPodpiska_bot`
 
@@ -52,3 +58,27 @@ const (
 До встречи на трибуне✊🏻`
 	RejectText = `К сожалению, твоя заявка отклонена администратором.`
 )
+
+func getApplicationMessageText(application *domain.Application) (text string) {
+	var isSevChelMemberString string
+	if application.IsSevChelParticipant {
+		isSevChelMemberString = "Да"
+	} else {
+		isSevChelMemberString = "Нет"
+	}
+
+	return fmt.Sprintf(
+		`
+ID: %d
+Ссылка на аккаунт: https://t.me/%s
+ФИО: %s
+Город/Район: %s
+Состоит в СЧ: %s
+		`,
+		application.ID,
+		application.TelegramUsername,
+		application.FullName,
+		application.District,
+		isSevChelMemberString,
+	)
+}

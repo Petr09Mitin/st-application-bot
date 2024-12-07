@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/NicoNex/echotron/v3"
@@ -49,13 +50,25 @@ func main() {
 
 	go router.MountRootRouter(rootRouter, applicationStorage, zapLogger)
 
-	dsp := echotron.NewDispatcher(token, applicationbot.GetApplicationBotConstructor(token, applicationStorage, zapLogger))
+	adminChatIDData := os.Getenv(config.AdminChatID)
+	if adminChatIDData == "" {
+		zapLogger.Error(domain.ErrInvalidEnv.Error())
+		return
+	}
+
+	adminChatID, err := strconv.ParseInt(adminChatIDData, 10, 64)
+	if err != nil {
+		zapLogger.Error(err.Error())
+		return
+	}
+
+	dsp := echotron.NewDispatcher(token, applicationbot.GetApplicationBotConstructor(token, adminChatID, applicationStorage, zapLogger))
 	for {
 		zapLogger.Info("Started polling...")
 		err = dsp.Poll()
 		if err != nil {
 			zapLogger.Error(err.Error())
 		}
-		time.Sleep(3 * time.Second)
+		time.Sleep(2 * time.Second)
 	}
 }

@@ -23,6 +23,7 @@ var (
 
 type ApplicationBot struct {
 	chatID       int64
+	adminChatID  int64
 	service      *application.Service
 	application  *domain.Application
 	currentState ConversationState
@@ -30,13 +31,14 @@ type ApplicationBot struct {
 	echotron.API
 }
 
-func GetApplicationBotConstructor(token string, storage application.ApplicationStorage, logger *zap.Logger) echotron.NewBotFn {
+func GetApplicationBotConstructor(token string, adminChatID int64, storage application.ApplicationStorage, logger *zap.Logger) echotron.NewBotFn {
 	return func(chatID int64) echotron.Bot {
 		return &ApplicationBot{
 			chatID,
+			adminChatID,
 			application.NewService(storage),
 			&domain.Application{},
-			0,
+			InitialState,
 			logger,
 			echotron.NewAPI(token),
 		}
@@ -212,7 +214,8 @@ func (b *ApplicationBot) HandlePlainTextMessage(messageText string) (err error) 
 	case WaitingForIsSevChelParticipant:
 		b.application.IsSevChelParticipant = messageText == YesCommand
 
-		_, err = b.service.CreateApplication(context.Background(), b.application)
+		var newApplication *domain.Application
+		newApplication, err = b.service.CreateApplication(context.Background(), b.application)
 		if err != nil {
 			if err == domain.ErrApplicationAlreadyExists {
 				_, err = b.SendMessage(ApplicationAlreadyExistsText, b.chatID, OptionsEmpty)
@@ -228,12 +231,26 @@ func (b *ApplicationBot) HandlePlainTextMessage(messageText string) (err error) 
 			return
 		}
 		b.currentState = InitialState
+
+		err = b.SendApplicationToAdmin(context.Background(), newApplication)
+		if err != nil {
+			return
+		}
 	default:
 		b.currentState = InitialState
 		_, err = b.SendMessage(PressStartText, b.chatID, OptionsWithStartKeyboard)
 		if err != nil {
 			return
 		}
+	}
+
+	return
+}
+
+func (b *ApplicationBot) SendApplicationToAdmin(ctx context.Context, application *domain.Application) (err error) {
+	_, err = b.SendMessage(getApplicationMessageText(application), b.adminChatID, OptionsEmpty)
+	if err != nil {
+		return
 	}
 
 	return

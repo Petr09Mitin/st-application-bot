@@ -9,4 +9,5 @@ var (
 	PgHostEnvName     = "PG_HOST"
 	PgPortEnvName     = "PG_PORT"
 	AppPortEnvName    = "APP_PORT"
+	AdminChatID       = "ADMIN_CHAT_ID"
 )
