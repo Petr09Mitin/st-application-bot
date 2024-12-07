@@ -248,7 +248,11 @@ func (b *ApplicationBot) HandlePlainTextMessage(messageText string) (err error) 
 }
 
 func (b *ApplicationBot) SendApplicationToAdmin(ctx context.Context, application *domain.Application) (err error) {
-	_, err = b.SendMessage(getApplicationMessageText(application), b.adminChatID, OptionsEmpty)
+	_, err = b.SendMessage(
+		getApplicationMessageText(application),
+		b.adminChatID,
+		getOptionsWithApproveOrRejectKeyboard(application.ID),
+	)
 	if err != nil {
 		return
 	}

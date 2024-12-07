@@ -59,3 +59,27 @@ var (
 		ReplyMarkup: YesOrNoWithCancelKeyboard,
 	}
 )
+
+func getApproveOrRejectKeyboard(applicationID uint64) echotron.InlineKeyboardMarkup {
+	return echotron.InlineKeyboardMarkup{
+		InlineKeyboard: [][]echotron.InlineKeyboardButton{
+			{
+				{
+					Text:         "Одобрить",
+					CallbackData: getApproveCommand(applicationID),
+				},
+				{
+					Text:         "Отклонить",
+					CallbackData: getRejectCommand(applicationID),
+				},
+			},
+		},
+	}
+}
+
+func getOptionsWithApproveOrRejectKeyboard(applicationID uint64) *echotron.MessageOptions {
+	return &echotron.MessageOptions{
+		ParseMode:   echotron.HTML,
+		ReplyMarkup: getApproveOrRejectKeyboard(applicationID),
+	}
+}
