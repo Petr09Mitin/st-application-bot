@@ -15,6 +15,7 @@ var (
 	ErrUnableToApproveApplication = errors.New("unable to approve application")
 	ErrUnableToDeclineApplication = errors.New("unable to decline application")
 	ErrUnableToSendMessage        = errors.New("unable to send message through telegram private chat")
+	ErrUnauthorized               = errors.New("unauthorized")
 )
 
 type HTTPError struct {
@@ -31,6 +32,7 @@ var HTTPErrors = map[error]int{
 	ErrUnableToApproveApplication: http.StatusInternalServerError,
 	ErrUnableToDeclineApplication: http.StatusInternalServerError,
 	ErrUnableToSendMessage:        http.StatusInternalServerError,
+	ErrUnauthorized:               http.StatusUnauthorized,
 }
 
 func ParseHTTPError(err error) (msg string, status int) {

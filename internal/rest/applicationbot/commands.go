@@ -2,7 +2,10 @@ package applicationbot
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
+
+	"github.com/st-application-bot/domain"
 )
 
 var (
@@ -28,4 +31,24 @@ func isApproveCommand(text string) bool {
 
 func isRejectCommand(text string) bool {
 	return strings.HasPrefix(text, rejectCommandPrefix)
+}
+
+func getApplicationIDFromApproveCommand(text string) (id uint64, err error) {
+	data, ok := strings.CutPrefix(text, approveCommandPrefix)
+	if !ok {
+		err = domain.ErrInvalidData
+		return
+	}
+
+	return strconv.ParseUint(data, 10, 64)
+}
+
+func getApplicationIDFromRejectCommand(text string) (id uint64, err error) {
+	data, ok := strings.CutPrefix(text, rejectCommandPrefix)
+	if !ok {
+		err = domain.ErrInvalidData
+		return
+	}
+
+	return strconv.ParseUint(data, 10, 64)
 }

@@ -356,7 +356,7 @@ func (a *Application) Update(ctx context.Context, application *domain.Applicatio
 	).Scan(
 		&updatedApplication.ID,
 		&updatedApplication.TelegramUserID,
-		&application.TelegramUsername,
+		&updatedApplication.TelegramUsername,
 		&updatedApplication.FullName,
 		&updatedApplication.District,
 		&updatedApplication.IsSevChelParticipant,

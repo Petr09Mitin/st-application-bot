@@ -2,6 +2,8 @@ package applicationbot
 
 import (
 	"context"
+	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/NicoNex/echotron/v3"
@@ -52,13 +54,14 @@ func (b *ApplicationBot) Update(update *echotron.Update) {
 	}
 
 	messageText := ""
+	messageID := 0
 
 	if update.Message != nil {
 		if update.Message.Chat.Type != "private" {
 			return
 		}
 
-		messageText, err = b.ValidateTextMessage(update)
+		messageText, messageID, err = b.ValidateTextMessage(update)
 		if err != nil {
 			b.logger.Error(err.Error())
 			return
@@ -68,21 +71,21 @@ func (b *ApplicationBot) Update(update *echotron.Update) {
 			return
 		}
 
-		messageText, err = b.ValidateCallbackQuery(update)
+		messageText, messageID, err = b.ValidateCallbackQuery(update)
 		if err != nil {
 			b.logger.Error(err.Error())
 			return
 		}
 	}
 
-	err = b.HandleTextMessage(messageText)
+	err = b.HandleTextMessage(messageText, messageID)
 	if err != nil {
 		b.logger.Error(err.Error())
 		return
 	}
 }
 
-func (b *ApplicationBot) ValidateTextMessage(update *echotron.Update) (messageText string, err error) {
+func (b *ApplicationBot) ValidateTextMessage(update *echotron.Update) (messageText string, messageID int, err error) {
 	if update.Message.From == nil {
 		b.currentState = InitialState
 		_, err = b.SendMessage(OnlyRealUsersText, b.chatID, OptionsEmpty)
@@ -113,10 +116,12 @@ func (b *ApplicationBot) ValidateTextMessage(update *echotron.Update) (messageTe
 		}
 	}
 
+	messageID = update.Message.ID
+
 	return
 }
 
-func (b *ApplicationBot) ValidateCallbackQuery(update *echotron.Update) (messageText string, err error) {
+func (b *ApplicationBot) ValidateCallbackQuery(update *echotron.Update) (messageText string, messageID int, err error) {
 	if update.CallbackQuery.From == nil {
 		b.currentState = InitialState
 		_, err = b.SendMessage(OnlyRealUsersText, b.chatID, OptionsEmpty)
@@ -133,12 +138,34 @@ func (b *ApplicationBot) ValidateCallbackQuery(update *echotron.Update) (message
 		}
 	}
 
+	if update.CallbackQuery.Message != nil {
+		messageID = update.CallbackQuery.Message.ID
+	} else if update.CallbackQuery.InlineMessageID != "" {
+		messageID, err = strconv.Atoi(update.CallbackQuery.InlineMessageID)
+		if err != nil {
+			return
+		}
+	} else {
+		err = domain.ErrInvalidData
+		return
+	}
+
 	return
 }
 
-func (b *ApplicationBot) HandleTextMessage(messageText string) (err error) {
-	switch messageText {
-	case StartCommand:
+func (b *ApplicationBot) HandleTextMessage(messageText string, messageID int) (err error) {
+	switch {
+	case isApproveCommand(messageText):
+		err = b.handleApproveCommand(messageText, messageID)
+		if err != nil {
+			return
+		}
+	case isRejectCommand(messageText):
+		err = b.handleRejectCommand(messageText, messageID)
+		if err != nil {
+			return
+		}
+	case messageText == StartCommand:
 		_, err = b.service.GetApplicationByTgUserID(context.Background(), b.application.TelegramUserID)
 		if err != domain.ErrApplicationNotFound {
 			if err != nil {
@@ -161,7 +188,7 @@ func (b *ApplicationBot) HandleTextMessage(messageText string) (err error) {
 		}
 
 		b.currentState = WaitingForName
-	case CancelCommand:
+	case messageText == CancelCommand:
 		_, err = b.SendMessage(CancelText, b.chatID, OptionsWithStartKeyboard)
 		if err != nil {
 			return
@@ -232,7 +259,7 @@ func (b *ApplicationBot) HandlePlainTextMessage(messageText string) (err error) 
 		}
 		b.currentState = InitialState
 
-		err = b.SendApplicationToAdmin(context.Background(), newApplication)
+		err = b.sendApplicationToAdmin(newApplication)
 		if err != nil {
 			return
 		}
@@ -247,12 +274,92 @@ func (b *ApplicationBot) HandlePlainTextMessage(messageText string) (err error) 
 	return
 }
 
-func (b *ApplicationBot) SendApplicationToAdmin(ctx context.Context, application *domain.Application) (err error) {
+func (b *ApplicationBot) sendApplicationToAdmin(application *domain.Application) (err error) {
 	_, err = b.SendMessage(
 		getApplicationMessageText(application),
 		b.adminChatID,
 		getOptionsWithApproveOrRejectKeyboard(application.ID),
 	)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (b *ApplicationBot) isSenderAdmin() bool {
+	return b.chatID == b.adminChatID
+}
+
+func (b *ApplicationBot) handleApproveCommand(text string, messageID int) (err error) {
+	if !b.isSenderAdmin() {
+		err = domain.ErrUnauthorized
+		return
+	}
+
+	id, err := getApplicationIDFromApproveCommand(text)
+	if err != nil {
+		return
+	}
+
+	application, err := b.service.ApproveApplication(context.Background(), uint(id))
+	if err != nil {
+		return
+	}
+
+	_, err = b.SendMessage(ApproveText, application.TelegramUserID, OptionsEmpty)
+	if err != nil {
+		return
+	}
+
+	_, err = b.SendMessage(
+		fmt.Sprintf("Заявка с ID %d (@%s) одобрена!", application.ID, application.TelegramUsername),
+		b.adminChatID,
+		OptionsEmpty,
+	)
+	if err != nil {
+		return
+	}
+
+	_, err = b.DeleteMessage(b.adminChatID, messageID)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (b *ApplicationBot) handleRejectCommand(text string, messageID int) (err error) {
+	if !b.isSenderAdmin() {
+		err = domain.ErrUnauthorized
+		return
+	}
+
+	id, err := getApplicationIDFromRejectCommand(text)
+	if err != nil {
+		return
+	}
+
+	application, err := b.service.RejectApplication(context.Background(), uint(id))
+	if err != nil {
+		return
+	}
+
+	_, err = b.SendMessage(RejectText, application.TelegramUserID, OptionsEmpty)
+	if err != nil {
+		return
+	}
+
+	_, err = b.SendMessage(
+		fmt.Sprintf("Заявка с ID %d (@%s) отклонена!", application.ID, application.TelegramUsername),
+		b.adminChatID,
+		OptionsEmpty,
+	)
+	if err != nil {
+		return
+	}
+
+	_, err = b.DeleteMessage(b.adminChatID, messageID)
 	if err != nil {
 		return
 	}
