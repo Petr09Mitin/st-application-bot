@@ -3,7 +3,6 @@ package router
 import (
 	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/NicoNex/echotron/v3"
 	"github.com/gorilla/mux"
@@ -14,10 +13,10 @@ import (
 	"go.uber.org/zap"
 )
 
-func MountRootRouter(rootRouter *mux.Router, applicationStorage application.ApplicationStorage, zapLogger *zap.Logger) {
-	r := rootRouter.PathPrefix("/api/v1").Subrouter()
+func MountRootRouter(rootRouter *mux.Router, applicationStorage application.ApplicationStorage, zapLogger *zap.Logger, cfg *config.Config) {
+	r := rootRouter.PathPrefix(cfg.Server.APIPrefix).Subrouter()
 
-	tgBotToken := os.Getenv(config.TGBotTokenEnvName)
+	tgBotToken := cfg.Telegram.BotToken
 	api := echotron.NewAPI(tgBotToken)
 
 	MountApplicationRouter(r, applicationStorage, zapLogger, &api)
@@ -25,13 +24,13 @@ func MountRootRouter(rootRouter *mux.Router, applicationStorage application.Appl
 	r.Use(middleware.Recovery)
 
 	handler := cors.New(cors.Options{
-		AllowedOrigins:   config.ALLOWED_ORIGINS,
-		AllowedMethods:   config.ALLOWED_METHODS,
-		AllowedHeaders:   config.ALLOWED_HEADERS,
-		AllowCredentials: true,
+		AllowedOrigins:   cfg.Server.CORS.AllowedOrigins,
+		AllowedMethods:   cfg.Server.CORS.AllowedMethods,
+		AllowedHeaders:   cfg.Server.CORS.AllowedHeaders,
+		AllowCredentials: cfg.Server.CORS.AllowedCredentials,
 	}).Handler(rootRouter)
 
-	appPort := os.Getenv(config.AppPortEnvName)
+	appPort := cfg.Server.Port
 	zapLogger.Info(fmt.Sprintf("started on port %s", appPort))
 	err := http.ListenAndServe(appPort, handler)
 	if err != nil {

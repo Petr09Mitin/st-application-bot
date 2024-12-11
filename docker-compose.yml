@@ -30,18 +30,18 @@ services:
     depends_on:
       - postgresdb
   
-  nginx:
-    image: nginx:1.27.3
-    restart: always
-    volumes:
-      - ./config/nginx/:/etc/nginx/
-      - /etc/letsencrypt/:/etc/letsencrypt/
-      - /root/st-application-front/:/root/st-application-front/
-    ports:
-      - 80:80
-      - 443:443
-    depends_on:
-      - app
+  # nginx:
+  #   image: nginx:1.27.3
+  #   restart: always
+  #   volumes:
+  #     - ./config/nginx/:/etc/nginx/
+  #     - /etc/letsencrypt/:/etc/letsencrypt/
+  #     - /root/st-application-front/:/root/st-application-front/
+  #   ports:
+  #     - 80:80
+  #     - 443:443
+  #   depends_on:
+  #     - app
 
 volumes:
   pg_data:

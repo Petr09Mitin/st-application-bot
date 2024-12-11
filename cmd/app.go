@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"strconv"
 	"time"
 
 	"github.com/NicoNex/echotron/v3"
@@ -17,13 +15,19 @@ import (
 )
 
 func main() {
-	zapLogger, err := logger.NewZapLogger(logger.DefaultOutputPaths)
+	cfg, err := config.NewConfig()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	token := os.Getenv(config.TGBotTokenEnvName)
+	zapLogger, err := logger.NewZapLogger(cfg.Logger.OutputPaths)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	token := cfg.Telegram.BotToken
 	if token == "" {
 		zapLogger.Error(domain.ErrInvalidEnv.Error())
 		return
@@ -31,11 +35,11 @@ func main() {
 
 	pgConnStr := fmt.Sprintf(
 		"user=%s dbname=%s password=%s host=%s port=%s sslmode=disable",
-		os.Getenv(config.PgUserEnvName),
-		os.Getenv(config.PgDBNameEnvName),
-		os.Getenv(config.PgPasswordEnvName),
-		os.Getenv(config.PgHostEnvName),
-		os.Getenv(config.PgPortEnvName),
+		cfg.Postgres.User,
+		cfg.Postgres.DBName,
+		cfg.Postgres.Password,
+		cfg.Postgres.Host,
+		cfg.Postgres.Port,
 	)
 	db, err := postgres.NewPool(pgConnStr)
 	if err != nil {
@@ -48,19 +52,9 @@ func main() {
 
 	rootRouter := mux.NewRouter()
 
-	go router.MountRootRouter(rootRouter, applicationStorage, zapLogger)
+	go router.MountRootRouter(rootRouter, applicationStorage, zapLogger, cfg)
 
-	adminChatIDData := os.Getenv(config.AdminChatID)
-	if adminChatIDData == "" {
-		zapLogger.Error(domain.ErrInvalidEnv.Error())
-		return
-	}
-
-	adminChatID, err := strconv.ParseInt(adminChatIDData, 10, 64)
-	if err != nil {
-		zapLogger.Error(err.Error())
-		return
-	}
+	adminChatID := cfg.Telegram.AdminChatID
 
 	dsp := echotron.NewDispatcher(token, applicationbot.GetApplicationBotConstructor(token, adminChatID, applicationStorage, zapLogger))
 	for {
@@ -69,6 +63,6 @@ func main() {
 		if err != nil {
 			zapLogger.Error(err.Error())
 		}
-		time.Sleep(2 * time.Second)
+		time.Sleep(cfg.Telegram.PollingTimeout)
 	}
 }
