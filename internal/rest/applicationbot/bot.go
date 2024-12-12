@@ -8,6 +8,7 @@ import (
 
 	"github.com/NicoNex/echotron/v3"
 	"github.com/st-application-bot/domain"
+	"github.com/st-application-bot/internal/config"
 	"github.com/st-application-bot/pkg/validators"
 	"github.com/st-application-bot/usecase/application"
 	"go.uber.org/zap"
@@ -30,10 +31,11 @@ type ApplicationBot struct {
 	application  *domain.Application
 	currentState ConversationState
 	logger       *zap.Logger
+	cfg          *config.Config
 	echotron.API
 }
 
-func GetApplicationBotConstructor(token string, adminChatID int64, storage application.ApplicationStorage, logger *zap.Logger) echotron.NewBotFn {
+func GetApplicationBotConstructor(token string, adminChatID int64, storage application.ApplicationStorage, logger *zap.Logger, cfg *config.Config) echotron.NewBotFn {
 	return func(chatID int64) echotron.Bot {
 		return &ApplicationBot{
 			chatID,
@@ -42,6 +44,7 @@ func GetApplicationBotConstructor(token string, adminChatID int64, storage appli
 			&domain.Application{},
 			InitialState,
 			logger,
+			cfg,
 			echotron.NewAPI(token),
 		}
 	}
@@ -253,7 +256,7 @@ func (b *ApplicationBot) HandlePlainTextMessage(messageText string) (err error) 
 			return
 		}
 
-		_, err = b.SendMessage(ConclusionText, b.chatID, OptionsEmpty)
+		_, err = b.SendMessage(getConclusionText(b.cfg.Telegram.IsSecondRoster), b.chatID, OptionsEmpty)
 		if err != nil {
 			return
 		}

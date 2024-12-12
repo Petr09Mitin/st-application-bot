@@ -9,12 +9,7 @@ RUN apk update && apk add bash && apk add build-base
 COPY . .
 
 RUN --mount=type=cache,target="/go/pkg/mod" \
-    go mod download -x
-
-ENV GOCACHE=/root/.cache/go-build
-
-RUN --mount=type=cache,target="/root/.cache/go-build" \
-    CGO_ENABLED=0 go build -tags=viper_bind_struct -o /build/app ./cmd/app.go
+    CGO_ENABLED=0 go build -tags viper_bind_struct -o /build/app ./cmd/app.go
 
 FROM gcr.io/distroless/base-debian11 AS build-release-stage
 

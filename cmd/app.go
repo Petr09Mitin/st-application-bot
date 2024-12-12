@@ -52,11 +52,13 @@ func main() {
 
 	rootRouter := mux.NewRouter()
 
-	go router.MountRootRouter(rootRouter, applicationStorage, zapLogger, cfg)
+	if !cfg.Server.IsAPIDisabled {
+		go router.MountRootRouter(rootRouter, applicationStorage, zapLogger, cfg)
+	}
 
 	adminChatID := cfg.Telegram.AdminChatID
 
-	dsp := echotron.NewDispatcher(token, applicationbot.GetApplicationBotConstructor(token, adminChatID, applicationStorage, zapLogger))
+	dsp := echotron.NewDispatcher(token, applicationbot.GetApplicationBotConstructor(token, adminChatID, applicationStorage, zapLogger, cfg))
 	for {
 		zapLogger.Info("Started polling...")
 		err = dsp.Poll()

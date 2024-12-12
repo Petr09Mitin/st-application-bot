@@ -31,9 +31,12 @@ const (
 	PurposePromptText              = `<b>С какой целью ты пришел в актив «Северной Трибуны»?</b>`
 	IsSevChelParticipantPromptText = `<b>Являешься ли ты участником объединения "Северный Человек"?</b>`
 	InformationSourcePromptText    = `<b>Как ты узнал о Северной Трибуне?</b>`
-	ConclusionText                 = `Спасибо за обратную связь!
+	ConclusionTextFirstRoster      = `Спасибо за обратную связь!
 
-Твоя заявка находится на рассмотрении. После одобрения заявки администратором, мы пришлем ссылку на бот для оформления ежемесячной подписки/сбора.`
+Твоя заявка находится на рассмотрении. После одобрения заявки администратором мы пришлем ссылку на бот для оформления ежемесячной подписки/сбора.`
+	ConclusionTextSecondRoster = `Спасибо за обратную связь!
+	
+Твоя заявка находится на рассмотрении. После одобрения заявки администратором мы пришлем ссылку на чат актива.`
 	PressStartText           = `Чтобы начать, нажми /start.`
 	CancelText               = `Заявка отменена. Чтобы попробовать еще раз, нажми /start.`
 	NoMessageText            = `Пожалуйста, пришли текстовое сообщение либо нажми кнопку!`
@@ -81,4 +84,12 @@ ID: %d
 		application.District,
 		isSevChelMemberString,
 	)
+}
+
+func getConclusionText(isSecondRoster bool) string {
+	if isSecondRoster {
+		return ConclusionTextSecondRoster
+	}
+
+	return ConclusionTextFirstRoster
 }

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"flag"
 	"time"
 
 	"github.com/spf13/viper"
@@ -29,12 +30,14 @@ type Telegram struct {
 	BotToken       string `mapstructure:"TG_BOT_TOKEN"`
 	AdminChatID    int64  `mapstructure:"ADMIN_CHAT_ID"`
 	PollingTimeout time.Duration
+	IsSecondRoster bool
 }
 
 type Server struct {
-	Port      string `mapstructure:"APP_PORT"`
-	APIPrefix string
-	CORS      CORS
+	Port          string `mapstructure:"APP_PORT"`
+	APIPrefix     string
+	CORS          CORS
+	IsAPIDisabled bool
 }
 
 type CORS struct {
@@ -66,7 +69,17 @@ var (
 	}
 )
 
+func parseFeatureFlags() {
+	isSecondRoster := flag.Bool("sr", false, "sr flag defines if bot instance is for processing second roster applications")
+	isAPIDisabled := flag.Bool("noapi", false, "noapi flag defines if application REST API server is disabled")
+	flag.Parse()
+
+	Default.Telegram.IsSecondRoster = *isSecondRoster
+	Default.Server.IsAPIDisabled = *isAPIDisabled
+}
+
 func NewConfig() (cfg *Config, err error) {
+	parseFeatureFlags()
 	v := viper.New()
 
 	v.AutomaticEnv()
