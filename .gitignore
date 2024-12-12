@@ -1,5 +1,6 @@
-.env
+*.env
 tern.conf
+second_roster.conf
 app
 creds.txt
 virt.cer

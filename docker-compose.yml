@@ -13,6 +13,20 @@ services:
       - 5431:5432
     volumes:
       - pg_data:/var/lib/postgresql/data/
+  
+  postgresdb_second_roster:
+    image: postgres:17.2
+    container_name: postgres_container_second_roster
+    env_file:
+      - second_roster.env
+    environment:
+      - POSTGRES_USER=${PG_USER}
+      - POSTGRES_PASSWORD=${PG_PASSWORD}
+      - POSTGRES_DB=${PG_DBNAME}
+    ports:
+      - 5430:5432
+    volumes:
+      - pg_data_second_roster:/var/lib/postgresql/data/
 
   app:
     image: petr09mitin/st-application-bot:latest
@@ -22,13 +36,23 @@ services:
     tty: true
     ports:
       - 8078:8078
-      - 8080:8080
     restart: always
     volumes:
       - .:/app
-      - ./volumes/logs/:/var/log/st_applications/
     depends_on:
       - postgresdb
+    
+  second_roster:
+    image: petr09mitin/st-application-bot:second-roster
+    container_name: main_second_roster
+    env_file:
+      - second_roster.env
+    tty: true
+    restart: always
+    volumes:
+      - .:/app
+    depends_on:
+      - postgresdb_second_roster
   
   nginx:
     image: nginx:1.27.3
@@ -42,6 +66,8 @@ services:
       - 443:443
     depends_on:
       - app
+      - second_roster
 
 volumes:
   pg_data:
+  pg_data_second_roster:

@@ -15,7 +15,7 @@ FROM gcr.io/distroless/base-debian11 AS build-release-stage
 
 COPY --from=build-stage /build/app /build/app
 
-EXPOSE 8078 8080
+EXPOSE 8078
 
 # Run the executable
 CMD ["/build/app"]
