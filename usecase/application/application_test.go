@@ -68,6 +68,7 @@ func TestApplicationService_GetApplicationByTgUserID(t *testing.T) {
 				return
 			}
 
+			assert.Equal(t, nil, err)
 			assert.Equal(t, tt.expected, got)
 		})
 	}
@@ -145,6 +146,7 @@ func TestApplicationService_CreateApplication(t *testing.T) {
 				return
 			}
 
+			assert.Equal(t, nil, err)
 			assert.Equal(t, tt.expected, got)
 		})
 	}
@@ -205,6 +207,7 @@ func TestApplicationService_GetAllApplications(t *testing.T) {
 				return
 			}
 
+			assert.Equal(t, nil, err)
 			assert.Equal(t, tt.expected, got)
 		})
 	}
@@ -265,6 +268,7 @@ func TestApplicationService_GetUnresolvedApplications(t *testing.T) {
 				return
 			}
 
+			assert.Equal(t, nil, err)
 			assert.Equal(t, tt.expected, got)
 		})
 	}
@@ -342,6 +346,7 @@ func TestApplicationService_ApproveApplication(t *testing.T) {
 				return
 			}
 
+			assert.Equal(t, nil, err)
 			assert.Equal(t, tt.expected, got)
 		})
 	}
@@ -419,6 +424,7 @@ func TestApplicationService_RejectApplication(t *testing.T) {
 				return
 			}
 
+			assert.Equal(t, nil, err)
 			assert.Equal(t, tt.expected, got)
 		})
 	}
@@ -479,6 +485,7 @@ func TestApplicationService_GetApprovedApplications(t *testing.T) {
 				return
 			}
 
+			assert.Equal(t, nil, err)
 			assert.Equal(t, tt.expected, got)
 		})
 	}
@@ -539,6 +546,7 @@ func TestApplicationService_GetRejectedApplications(t *testing.T) {
 				return
 			}
 
+			assert.Equal(t, nil, err)
 			assert.Equal(t, tt.expected, got)
 		})
 	}
