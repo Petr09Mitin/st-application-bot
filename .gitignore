@@ -1,11 +1,12 @@
 *.env
+.vscode/
 tern.conf
 second_roster.conf
 app
 creds.txt
 virt.cer
 notes.txt
-volumes/build/*
+volumes/
 backup.sql
 id_rsa
 id_rsa.pub
