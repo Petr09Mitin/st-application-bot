@@ -5,7 +5,7 @@ import (
 
 	"github.com/NicoNex/echotron/v3"
 	"github.com/st-application-bot/domain"
-	"github.com/st-application-bot/internal/rest/applicationbot"
+	applicationbot "github.com/st-application-bot/internal/rest/application_bot"
 	"github.com/st-application-bot/internal/rest/utils"
 	"github.com/st-application-bot/pkg/json"
 	"github.com/st-application-bot/usecase/application"

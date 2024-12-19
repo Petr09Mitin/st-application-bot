@@ -24,10 +24,17 @@ var (
 	WaitingForPurpose              ConversationState = 4
 )
 
+type ApplicationService interface {
+	GetApplicationByTgUserID(ctx context.Context, tgUserID int64) (application *domain.Application, err error)
+	CreateApplication(ctx context.Context, application *domain.Application) (newApplication *domain.Application, err error)
+	ApproveApplication(ctx context.Context, applicationID uint) (application *domain.Application, err error)
+	RejectApplication(ctx context.Context, applicationID uint) (application *domain.Application, err error)
+}
+
 type ApplicationBot struct {
 	chatID       int64
 	adminChatID  int64
-	service      *application.Service
+	service      ApplicationService
 	application  *domain.Application
 	currentState ConversationState
 	logger       *zap.Logger

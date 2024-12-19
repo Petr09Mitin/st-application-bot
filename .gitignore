@@ -10,3 +10,4 @@ backup.sql
 id_rsa
 id_rsa.pub
 st.session.sql
+mocks/

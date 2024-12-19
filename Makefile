@@ -15,3 +15,16 @@ migrate:
 	&& tern migrate --config ./tern.conf \
 	&& tern migrate --config ./second_roster.conf \
 	&& cd ../../../../
+
+.PHONY: mocks
+MOCKS_DESTINATION=mocks
+mocks: 
+	@echo "Generating mocks..."
+	@rm -rf $(MOCKS_DESTINATION)
+	@for file in $(shell find usecase -type f -name '*.go' ! -name '*_test.go'); do \
+		mkdir -p $(MOCKS_DESTINATION)/`dirname $$file` && mockgen -source=$$file -destination=$(MOCKS_DESTINATION)/$$file; \
+	done
+	@for file in $(shell find internal/rest/application_bot -type f -name '*.go' ! -name '*_test.go'); do \
+		mkdir -p $(MOCKS_DESTINATION)/`dirname $$file | sed 's/internal\///'` && mockgen -source=$$file -destination=$(MOCKS_DESTINATION)/`echo $$file | sed 's/internal\///'`; \
+	done
+	@echo "Mocks generated."
