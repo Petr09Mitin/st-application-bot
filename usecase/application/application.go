@@ -13,7 +13,6 @@ type ApplicationStorage interface {
 	GetApproved(ctx context.Context) (applications []*domain.Application, err error)
 	GetRejected(ctx context.Context) (applications []*domain.Application, err error)
 	GetByTgUserID(ctx context.Context, tgUserID int64) (application *domain.Application, err error)
-	GetAllTargetChats(ctx context.Context) (chats []*domain.TargetChat, err error)
 	GetByID(ctx context.Context, applicationID uint) (application *domain.Application, err error)
 	Update(ctx context.Context, application *domain.Application) (updatedApplication *domain.Application, err error)
 }
@@ -97,15 +96,6 @@ func (s *Service) RejectApplication(ctx context.Context, applicationID uint) (ap
 	application.Resolved = true
 
 	application, err = s.storage.Update(ctx, application)
-	if err != nil {
-		return
-	}
-
-	return
-}
-
-func (s *Service) GetAllTargetChats(ctx context.Context) (chats []*domain.TargetChat, err error) {
-	chats, err = s.storage.GetAllTargetChats(ctx)
 	if err != nil {
 		return
 	}

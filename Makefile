@@ -28,3 +28,12 @@ mocks:
 		mkdir -p $(MOCKS_DESTINATION)/`dirname $$file | sed 's/internal\///'` && mockgen -source=$$file -destination=$(MOCKS_DESTINATION)/`echo $$file | sed 's/internal\///'`; \
 	done
 	@echo "Mocks generated."
+
+.PHONY: test
+test:
+	go test ./... -coverpkg ./... -coverprofile cover.out.tmp
+	cat cover.out.tmp | grep -v "docs" | grep -v "mocks" | grep -v "proto" | grep -v "easyjson" > cover.out
+
+.PHONY: coverage
+coverage:
+	go tool cover -func cover.out
