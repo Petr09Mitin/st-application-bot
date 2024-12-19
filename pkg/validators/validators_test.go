@@ -119,7 +119,6 @@ func TestApplicationService_IsValidFullName(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-
 			got := IsValidFullName(tt.args.name)
 			assert.Equal(t, tt.expected, got)
 		})
