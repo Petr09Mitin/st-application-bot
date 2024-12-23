@@ -16,6 +16,16 @@ var (
 	ErrUnableToDeclineApplication = errors.New("unable to decline application")
 	ErrUnableToSendMessage        = errors.New("unable to send message through telegram private chat")
 	ErrUnauthorized               = errors.New("unauthorized")
+	ErrChatNotPrivate             = errors.New("chat with bot is not a private chat")
+	ErrInvalidUpdate              = errors.New("invalid echotron.Update argument")
+	ErrMessageSenderNotSpecified  = errors.New("message sender not specified in update")
+	ErrEmptyUsername              = errors.New("empty tg username")
+	ErrEmptyMessageText           = errors.New("empty message text")
+	ErrInvalidMessageID           = errors.New("invalid message id")
+	ErrInvalidFullName            = errors.New("invalid full name")
+	ErrNoCallbackQueryMessage     = errors.New("no message in callback query")
+	ErrNoMessage                  = errors.New("no message provided")
+	ErrInvalidCallbackQuery       = errors.New("invalid callback query")
 )
 
 type HTTPError struct {

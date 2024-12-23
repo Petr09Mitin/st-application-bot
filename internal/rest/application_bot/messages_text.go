@@ -93,3 +93,11 @@ func getConclusionText(isSecondRoster bool) string {
 
 	return ConclusionTextFirstRoster
 }
+
+func getApproveAdminMessageText(id uint64, tgUsername string) string {
+	return fmt.Sprintf("Заявка с ID %d (@%s) одобрена!", id, tgUsername)
+}
+
+func getRejectAdminMessageText(id uint64, tgUsername string) string {
+	return fmt.Sprintf("Заявка с ID %d (@%s) отклонена!", id, tgUsername)
+}

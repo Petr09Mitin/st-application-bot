@@ -9,10 +9,10 @@ import (
 )
 
 var (
-	StartCommand         = "/start"
-	CancelCommand        = "/cancel"
-	YesCommand           = "/yes"
-	NoCommand            = "/no"
+	startCommand         = "/start"
+	cancelCommand        = "/cancel"
+	yesCommand           = "/yes"
+	noCommand            = "/no"
 	approveCommandPrefix = "/approve/"
 	rejectCommandPrefix  = "/reject/"
 )
@@ -23,6 +23,18 @@ func getApproveCommand(applicationID uint64) string {
 
 func getRejectCommand(applicationID uint64) string {
 	return fmt.Sprintf("%s%d", rejectCommandPrefix, applicationID)
+}
+
+func isStartCommand(text string) bool {
+	return text == startCommand
+}
+
+func isCancelCommand(text string) bool {
+	return text == cancelCommand
+}
+
+func isYesCommand(text string) bool {
+	return text == yesCommand
 }
 
 func isApproveCommand(text string) bool {

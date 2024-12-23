@@ -8,7 +8,7 @@ var (
 			{
 				{
 					Text:         "Начать",
-					CallbackData: StartCommand,
+					CallbackData: startCommand,
 				},
 			},
 		},
@@ -18,7 +18,7 @@ var (
 			{
 				{
 					Text:         "Отмена",
-					CallbackData: CancelCommand,
+					CallbackData: cancelCommand,
 				},
 			},
 		},
@@ -28,17 +28,17 @@ var (
 			{
 				{
 					Text:         "Да",
-					CallbackData: YesCommand,
+					CallbackData: yesCommand,
 				},
 				{
 					Text:         "Нет",
-					CallbackData: NoCommand,
+					CallbackData: noCommand,
 				},
 			},
 			{
 				{
 					Text:         "Отмена",
-					CallbackData: CancelCommand,
+					CallbackData: cancelCommand,
 				},
 			},
 		},

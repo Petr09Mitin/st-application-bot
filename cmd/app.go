@@ -12,6 +12,7 @@ import (
 	applicationbot "github.com/st-application-bot/internal/rest/application_bot"
 	"github.com/st-application-bot/internal/rest/router"
 	"github.com/st-application-bot/pkg/logger"
+	"github.com/st-application-bot/usecase/application"
 )
 
 func main() {
@@ -58,7 +59,16 @@ func main() {
 
 	adminChatID := cfg.Telegram.AdminChatID
 
-	dsp := echotron.NewDispatcher(token, applicationbot.GetApplicationBotConstructor(token, adminChatID, applicationStorage, zapLogger, cfg))
+	dsp := echotron.NewDispatcher(
+		token,
+		applicationbot.GetApplicationBotConstructor(
+			adminChatID,
+			echotron.NewAPI(token),
+			application.NewService(applicationStorage),
+			zapLogger,
+			cfg,
+		),
+	)
 	for {
 		zapLogger.Info("Started polling...")
 		err = dsp.Poll()

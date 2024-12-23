@@ -10,7 +10,7 @@ volumes/
 backup.sql
 id_rsa
 id_rsa.pub
-st.session.sql
+*.session.sql
 mocks/
 cover.out
 cover.out.tmp
