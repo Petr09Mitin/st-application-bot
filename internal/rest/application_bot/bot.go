@@ -24,6 +24,7 @@ var (
 	WaitingForDistrict             ConversationState = 2
 	WaitingForIsSevChelParticipant ConversationState = 3
 	WaitingForPurpose              ConversationState = 4
+	WaitingForSocialMedia          ConversationState = 5
 )
 
 type ApplicationService interface {
@@ -365,6 +366,15 @@ func (b *ApplicationBot) HandlePlainTextMessage(messageText string) (err error) 
 		b.currentState = WaitingForDistrict
 	case WaitingForDistrict:
 		b.application.District = messageText
+
+		_, err = b.SendMessage(SocialMediaPromptText, b.chatID, OptionsWithCancelKeyboard)
+		if err != nil {
+			return
+		}
+
+		b.currentState = WaitingForSocialMedia
+	case WaitingForSocialMedia:
+		b.application.SocialMediaLink = messageText
 
 		_, err = b.SendMessage(IsSevChelParticipantPromptText, b.chatID, OptionsWithYesOrNoWithCancelKeyboard)
 		if err != nil {

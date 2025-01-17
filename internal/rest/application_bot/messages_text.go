@@ -41,6 +41,7 @@ const (
 
 <i>Примеры: Выхино, Химки</i>`
 	PurposePromptText              = `<b>С какой целью ты пришел в актив «Северной Трибуны»?</b>`
+	SocialMediaPromptText          = `<b>Пожалуйста, отправь ссылку на свою страницу в какой-либо социальной сети (ВКонтакте, Одноклассники или иной).</b>`
 	IsSevChelParticipantPromptText = `<b>Являешься ли ты участником объединения "Северный Человек"?</b>`
 	InformationSourcePromptText    = `<b>Как ты узнал о Северной Трибуне?</b>`
 	ConclusionTextFirstRoster      = `Спасибо за обратную связь!
@@ -106,12 +107,14 @@ ID: %d
 Ссылка на аккаунт: https://t.me/%s
 ФИО: %s
 Город/Район: %s
+Ссылка на соцсеть: %s
 Состоит в СЧ: %s
 		`,
 		application.ID,
 		application.TelegramUsername,
 		application.FullName,
 		application.District,
+		application.SocialMediaLink,
 		isSevChelMemberString,
 	)
 }

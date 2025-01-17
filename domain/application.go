@@ -9,6 +9,7 @@ type Application struct {
 	FullName             string    `json:"fullName"`
 	District             string    `json:"district"`
 	IsSevChelParticipant bool      `json:"isSevChelParticipant"`
+	SocialMediaLink      string    `json:"socialMediaLink"`
 	Resolved             bool      `json:"resolved"`
 	Approved             bool      `json:"approved"`
 	CreatedAt            time.Time `json:"createdAt"`
