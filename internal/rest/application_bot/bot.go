@@ -2,6 +2,7 @@ package applicationbot
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/NicoNex/echotron/v3"
@@ -35,6 +36,8 @@ type ApplicationService interface {
 type BotAPI interface {
 	SendMessage(text string, chatID int64, opts *echotron.MessageOptions) (res echotron.APIResponseMessage, err error)
 	DeleteMessage(chatID int64, messageID int) (res echotron.APIResponseBase, err error)
+	ApproveChatJoinRequest(chatID, userID int64) (res echotron.APIResponseBool, err error)
+	DeclineChatJoinRequest(chatID, userID int64) (res echotron.APIResponseBool, err error)
 }
 
 type Logger interface {
@@ -301,7 +304,11 @@ func (b *ApplicationBot) handleStartCommand() (err error) {
 	}
 
 	// user can apply, send introduction
-	_, err = b.SendMessage(IntroductionText, b.chatID, OptionsEmpty)
+	_, err = b.SendMessage(
+		getIntroductionText(b.cfg.Telegram.IsSecondRoster),
+		b.chatID,
+		OptionsEmpty,
+	)
 	if err != nil {
 		return
 	}
@@ -450,7 +457,11 @@ func (b *ApplicationBot) handleApproveCommand(text string, messageID int) (err e
 		return
 	}
 
-	_, err = b.SendMessage(ApproveText, application.TelegramUserID, OptionsEmpty)
+	_, err = b.SendMessage(
+		getApproveText(b.cfg.Telegram.IsSecondRoster),
+		application.TelegramUserID,
+		OptionsEmpty,
+	)
 	if err != nil {
 		return
 	}
@@ -467,6 +478,15 @@ func (b *ApplicationBot) handleApproveCommand(text string, messageID int) (err e
 	_, err = b.DeleteMessage(b.adminChatID, messageID)
 	if err != nil {
 		return
+	}
+
+	// if IsSecondRoster, add user to chat automatically
+	if b.cfg.Telegram.IsSecondRoster {
+		b.logger.Error(fmt.Sprintf("%v %v", b.cfg.Telegram.SecondRosterChatID, b.application.TelegramUserID))
+		_, err = b.BotAPI.ApproveChatJoinRequest(b.cfg.Telegram.SecondRosterChatID, application.TelegramUserID)
+		if err != nil {
+			return
+		}
 	}
 
 	return
@@ -509,6 +529,14 @@ func (b *ApplicationBot) handleRejectCommand(text string, messageID int) (err er
 	_, err = b.DeleteMessage(b.adminChatID, messageID)
 	if err != nil {
 		return
+	}
+
+	// if IsSecondRoster, decline user chat join request automatically
+	if b.cfg.Telegram.IsSecondRoster {
+		_, err = b.BotAPI.DeclineChatJoinRequest(b.cfg.Telegram.SecondRosterChatID, application.TelegramUserID)
+		if err != nil {
+			return
+		}
 	}
 
 	return

@@ -27,10 +27,11 @@ type Postgres struct {
 }
 
 type Telegram struct {
-	BotToken       string `mapstructure:"TG_BOT_TOKEN"`
-	AdminChatID    int64  `mapstructure:"ADMIN_CHAT_ID"`
-	PollingTimeout time.Duration
-	IsSecondRoster bool
+	BotToken           string `mapstructure:"TG_BOT_TOKEN"`
+	AdminChatID        int64  `mapstructure:"ADMIN_CHAT_ID"`
+	SecondRosterChatID int64  `mapstructure:"SECOND_ROSTER_CHAT_ID"`
+	PollingTimeout     time.Duration
+	IsSecondRoster     bool
 }
 
 type Server struct {

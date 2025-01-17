@@ -11,11 +11,23 @@ const (
 
 	IntroductionText = `Дорогой Брат! 
 
-Этот бот создан для подачи заявки в Московский актив «Северной Трибуны». Просим тебя ответить на вопросы ниже. 
+Этот бот создан для подачи заявки в Московский состав «Северной Трибуны». Просим тебя ответить на вопросы ниже. 
 
 Прежде чем подавать заявку, пожалуйста, ознакомься с правилами: https://telegra.ph/Pravila-povedeniya-na-meropriyatiyah-Severnoj-Tribuny-05-27
 
 Обрати внимание, что участие в активе подразумевает ежемесячный взнос (от 350р) на нужды наших братьев, находящихся на фронте! Взнос вносится в формате ежемесячной подписки на чат актива. После одобрения заявки администратором тебе будет предоставлена ссылка на бота для оформления подписки. 
+
+<i>Чтобы очистить свою заявку, нажми /cancel.</i>`
+
+	SecondRosterIntroducationText = `Дорогой Брат! 
+
+Этот бот создан для подачи заявки в Московский состав «Северной Трибуны». Просим тебя ответить на вопросы ниже. 
+
+Прежде чем подавать заявку, пожалуйста, ознакомься с правилами: https://telegra.ph/Pravila-povedeniya-na-meropriyatiyah-Severnoj-Tribuny-05-27
+
+Обрати внимание, что нахождение в составе подразумевает регулярное посещение турниров и репетиций "Северной Трибуны"!
+
+В чате будет доступна актуальная информация о посещаемых мероприятиях и билеты.
 
 <i>Чтобы очистить свою заявку, нажми /cancel.</i>`
 
@@ -36,7 +48,9 @@ const (
 Твоя заявка находится на рассмотрении. После одобрения заявки администратором мы пришлем ссылку на бот для оформления ежемесячной подписки/сбора.`
 	ConclusionTextSecondRoster = `Спасибо за обратную связь!
 	
-Твоя заявка находится на рассмотрении. После одобрения заявки администратором мы пришлем ссылку на чат актива.`
+Твоя заявка находится на рассмотрении. После одобрения заявки администратором ты будешь автоматически добавлен в чат актива.
+
+Чтобы завершить процесс подачи заявки, перейди по ссылке ` + SecondRosterChatLink
 	PressStartText           = `Чтобы начать, нажми /start.`
 	CancelText               = `Заявка отменена. Чтобы попробовать еще раз, нажми /start.`
 	NoMessageText            = `Пожалуйста, пришли текстовое сообщение либо нажми кнопку!`
@@ -59,8 +73,24 @@ const (
 Перейди в бот для оформления ежемесячной подписки ` + SubscriptionBotLink + ` и следуй всем инструкциям.
 
 До встречи на трибуне✊🏻`
+	SecondRosterChatLink    = `https://t.me/+TNNsR-dmWTcxYTQy`
+	SecondRosterApproveText = `Дорогой Брат! 
+
+Твоя заявка одобрена, добро пожаловать в «Северную Трибуну».
+
+Если ты не был автоматически добавлен в чат, напиши администратору @stadmin001.
+
+До встречи на трибуне✊🏻`
 	RejectText = `К сожалению, твоя заявка отклонена администратором.`
 )
+
+func getIntroductionText(isSecondRoster bool) string {
+	if isSecondRoster {
+		return SecondRosterIntroducationText
+	}
+
+	return IntroductionText
+}
 
 func getApplicationMessageText(application *domain.Application) (text string) {
 	var isSevChelMemberString string
@@ -92,6 +122,14 @@ func getConclusionText(isSecondRoster bool) string {
 	}
 
 	return ConclusionTextFirstRoster
+}
+
+func getApproveText(isSecondRoster bool) string {
+	if isSecondRoster {
+		return SecondRosterApproveText
+	}
+
+	return ApproveText
 }
 
 func getApproveAdminMessageText(id uint64, tgUsername string) string {

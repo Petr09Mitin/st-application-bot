@@ -14,19 +14,19 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data/
   
-  postgresdb_second_roster:
-    image: postgres:17.2
-    container_name: postgres_container_second_roster
-    env_file:
-      - second_roster.env
-    environment:
-      - POSTGRES_USER=${PG_USER}
-      - POSTGRES_PASSWORD=${PG_PASSWORD}
-      - POSTGRES_DB=${PG_DBNAME}
-    ports:
-      - 5430:5432
-    volumes:
-      - pg_data_second_roster:/var/lib/postgresql/data/
+  # postgresdb_second_roster:
+  #   image: postgres:17.2
+  #   container_name: postgres_container_second_roster
+  #   env_file:
+  #     - second_roster.env
+  #   environment:
+  #     - POSTGRES_USER=${PG_USER}
+  #     - POSTGRES_PASSWORD=${PG_PASSWORD}
+  #     - POSTGRES_DB=${PG_DBNAME}
+  #   ports:
+  #     - 5430:5432
+  #   volumes:
+  #     - pg_data_second_roster:/var/lib/postgresql/data/
 
   app:
     image: petr09mitin/st-application-bot:latest
@@ -42,31 +42,31 @@ services:
     depends_on:
       - postgresdb
     
-  second_roster:
-    image: petr09mitin/st-application-bot:second-roster
-    container_name: main_second_roster
-    env_file:
-      - second_roster.env
-    tty: true
-    restart: always
-    volumes:
-      - .:/app
-    depends_on:
-      - postgresdb_second_roster
+  # second_roster:
+  #   image: petr09mitin/st-application-bot:second-roster
+  #   container_name: main_second_roster
+  #   env_file:
+  #     - second_roster.env
+  #   tty: true
+  #   restart: always
+  #   volumes:
+  #     - .:/app
+  #   depends_on:
+  #     - postgresdb_second_roster
   
-  nginx:
-    image: nginx:1.27.3
-    restart: always
-    volumes:
-      - ./config/nginx/:/etc/nginx/
-      - /etc/letsencrypt/:/etc/letsencrypt/
-      - /root/st-application-front/:/root/st-application-front/
-    ports:
-      - 80:80
-      - 443:443
-    depends_on:
-      - app
-      - second_roster
+  # nginx:
+  #   image: nginx:1.27.3
+  #   restart: always
+  #   volumes:
+  #     - ./config/nginx/:/etc/nginx/
+  #     - /etc/letsencrypt/:/etc/letsencrypt/
+  #     - /root/st-application-front/:/root/st-application-front/
+  #   ports:
+  #     - 80:80
+  #     - 443:443
+  #   depends_on:
+  #     - app
+  #     - second_roster
 
 volumes:
   pg_data:

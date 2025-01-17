@@ -18,4 +18,4 @@ COPY --from=build-stage /build/app /build/app
 EXPOSE 8078
 
 # Run the executable
-CMD ["/build/app"]
+CMD ["/build/app", "-noapi"]
