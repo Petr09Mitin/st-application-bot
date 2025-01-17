@@ -11,6 +11,5 @@ backup.sql
 id_rsa
 id_rsa.pub
 *.session.sql
-mocks/
 cover.out
 cover.out.tmp
